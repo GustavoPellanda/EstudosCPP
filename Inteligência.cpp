@@ -116,15 +116,15 @@ void Secreto::agir(){
 }
 
 void Espiao::agir(){
-    auto iterador = secres.begin();
+    list<Secreto*>::iterator iterador;
+    iterador = secres.begin();
     while(iterador != secres.end()){
-        auto proximo = next(iterador);
         if((*iterador)->getForca() > 0.0) (*iterador)->operator--();
         else{
             cout << "Agente secreto " << (*iterador)->getId() << " neutralizado." << endl;
-            secres.erase(iterador);
+            iterador = secres.erase(iterador);
         }
-        iterador = proximo;
+        iterador++;
     }
 }
 
