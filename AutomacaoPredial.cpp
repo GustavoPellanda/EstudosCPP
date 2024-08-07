@@ -75,7 +75,25 @@ public:
 
 #define max_andares 5
 
-class Controle_Andar;
+class Controle_Predio;
+
+class Controle_Andar {
+private:
+    Presenca sens_pres;
+    Controle_Predio* pCtrlPred;
+    float oxigenio;
+    bool incendio;
+
+public:
+    Controle_Andar(float O = 100.0): sens_pres(), pCtrlPred(nullptr), oxigenio(O), incendio(false) {}
+    ~Controle_Andar() {}
+
+    void setControlePredio(Controle_Predio* pCP) { pCtrlPred = pCP; }
+    const float getOxigenio() const { return oxigenio; }
+    const bool getIncendio() const { return incendio; }
+    
+    void controlar();
+};
 
 class Controle_Predio {
 private:
@@ -111,40 +129,25 @@ public:
             for (int j = 0; j < max_andares; j++) andares[j].controlar();
         }
         informar_Colapso();
+        informar_Incendio();
     }
 
 };
 
-class Controle_Andar {
-private:
-    Presenca sens_pres;
-    Controle_Predio* pCtrlPred;
-    float oxigenio;
-    bool incendio;
+void Controle_Andar::controlar(){
+    if(sens_pres.getAmbosAtivos() 
+    && (sens_pres.getTemperatura() > 55) 
+    &&  (sens_pres.getTemperatura() >= pCtrlPred->getTemperatura()) 
+    &&  sens_pres.getAlguem()) 
+        incendio = true;
 
-public:
-    Controle_Andar(float O = 100.0): sens_pres(), pCtrlPred(nullptr), oxigenio(O), incendio(false) {}
-    ~Controle_Andar() {}
-
-    void setControlePredio(Controle_Predio* pCP) { pCtrlPred = pCP; }
-    const float getOxigenio() const { return oxigenio; }
-    const bool getIncendio() const { return incendio; }
-    
-    void controlar(){
-        if(sens_pres.getAmbosAtivos() 
-        && (sens_pres.getTemperatura() > 55) 
-        &&  (sens_pres.getTemperatura() >= pCtrlPred->getTemperatura()) 
-        &&  sens_pres.getAlguem()) 
-            incendio = true;
-
-        if(sens_pres.getAmbosAtivos()
-        && (sens_pres.getTemperatura() > 55) 
-        && !(sens_pres.getAlguem())){
-            oxigenio = 0.0;
-            incendio = false;
-        }
+    if(sens_pres.getAmbosAtivos()
+    && (sens_pres.getTemperatura() > 55) 
+    && !(sens_pres.getAlguem())){
+        oxigenio = 0.0;
+        incendio = false;
     }
-};
+}
 
 int main() {
     Controle_Predio CP1(1);
